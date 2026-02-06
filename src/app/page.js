@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 // Importamos nosso novo componente
 import CardCliente from './components/CardCliente';
+import ModalCliente from './components/ModalCliente';
 
 export default function Home() {
+  const [modal, setModal] = useState(false);
   const [contador, setContador] = useState(0);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,11 +31,47 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(resposta => resposta.json())
-      .then(dados => setUsers(dados))
-      .finally(() => setLoading(false)); // Corrigimos a ordem aqui ;)
-  }, []);
+    // 2. Função de carregamento
+    const carregarDados = async () => {
+  try {
+    setLoading(true);
+    
+    const storageLocal = localStorage.getItem("clientes");
+    let salvosLocal = [];
+
+    // Proteção: Tenta ler o que está no storage, se falhar ou não for array, mantém []
+    try {
+      const dadosConvertidos = storageLocal ? JSON.parse(storageLocal) : [];
+      salvosLocal = Array.isArray(dadosConvertidos) ? dadosConvertidos : [];
+    } catch (e) {
+      salvosLocal = [];
+    }
+
+    const resposta = await fetch('https://jsonplaceholder.typicode.com/users');
+    const dadosApi = await resposta.json();
+
+    // Agora o .some() não vai mais quebrar porque garantimos que salvosLocal é um Array
+    const listaFinal = [...salvosLocal];
+    
+    dadosApi.forEach(userApi => {
+      const jaExiste = salvosLocal.some(u => u.id === userApi.id);
+      if (!jaExiste) {
+        listaFinal.push(userApi);
+      }
+    });
+
+    setUsers(listaFinal);
+    localStorage.setItem("clientes", JSON.stringify(listaFinal));
+  } catch (error) {
+    console.error("Erro ao sincronizar:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+    carregarDados();
+  }, []); // O array vazio garante que rode apenas uma vez
+
 
   const usuariosFiltrados = users.filter(user => 
     user.name.toLowerCase().includes(textoBusca.toLowerCase())
@@ -49,7 +87,11 @@ export default function Home() {
           Oficina do Dev
         </h1>
         <p className="text-slate-500 mb-8">Gerencie seus clientes e favoritos em um só lugar.</p>
+        <button onClick={() => setModal(true)} className="text-blue-500 font-bold hover:cursor-pointer mb-5">Adicionar Cliente</button>
 
+        <ModalCliente modal={modal} setUsers={setUsers} CloseModal={() =>{ setModal(false);}}/>
+        
+      
         {/* INPUT DE BUSCA ESTILIZADO */}
         <div className="relative max-w-md mx-auto">
           {/* Ícone de Lupa (Absoluto para ficar "dentro" do input) */}

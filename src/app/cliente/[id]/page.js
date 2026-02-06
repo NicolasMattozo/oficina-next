@@ -18,11 +18,14 @@ export default function DetalhesCliente() {
     useEffect(() => {
         if(!id) return;
 
-        // Busca APENAS o usuário específico
-        fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-            .then(res => res.json())
-            .then(dados => setUser(dados))
-            .finally(() => setLoading(false));
+        const dadosLocal = localStorage.getItem("clientes");
+  
+        const clientes = dadosLocal ? JSON.parse(dadosLocal) : [];
+
+        const clienteEncontrado = clientes.find(user => user.id === Number(id));
+
+        setUser(clienteEncontrado);
+        setLoading(false);
     }, [id]);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center text-black">Carregando...</div>
@@ -55,8 +58,14 @@ export default function DetalhesCliente() {
                     </div>
                     <div className="flex flex-col gap-1">
                         <h2 className="font-semibold text-lg mb-2 text-blue-600 self-center">Empresa</h2>
-                        <p><strong>Nome:</strong> {user.company.name}</p>
-                        <p className="text-sm italic text-gray-600">"{user.company.catchPhrase}"</p>
+                        
+                        {/* O ?. garante que se não houver empresa, ele não trave */}
+                        <p><strong>Nome:</strong> {user.company?.name || "Não informada"}</p>
+                        
+                        {/* Se não houver catchPhrase, ele simplesmente não exibe nada ou mostra um texto padrão */}
+                        {user.company?.catchPhrase && (
+                            <p className="text-sm italic text-gray-600">"{user.company.catchPhrase}"</p>
+                        )}
                     </div>
                 </div>
             </div>
