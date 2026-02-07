@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 // Importamos nosso novo componente
 import CardCliente from './components/CardCliente';
 import ModalCliente from './components/ModalCliente';
+import { set } from 'zod';
 
 export default function Home() {
   const [modal, setModal] = useState(false);
+  const [idCliente, setIdCliente] = useState(null);
   const [contador, setContador] = useState(0);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,25 @@ export default function Home() {
       prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id]
     );
   };
+
+  const deleteCliente = (id) => {
+    const items = JSON.parse(localStorage.getItem('clientes') || '[]');
+    const usuariosFiltrados = items.filter(item => item.id !== id);
+    setUsers(usuariosFiltrados);
+    localStorage.setItem('clientes', JSON.stringify(usuariosFiltrados));
+  }
+
+  const editCliente = (id) => {
+    // Busca o cliente completo pelo ID
+    const idCliente = users.find(user => user.id === id);
+    
+    // Salva o objeto do cliente no estado
+    setIdCliente(idCliente);
+    
+    // Abre a modal
+    setModal(true);
+};
+
 
   useEffect(() => {
     // 2. Função de carregamento
@@ -83,13 +104,21 @@ export default function Home() {
       
       {/* CABEÇALHO */}
       <div className="max-w-5xl mx-auto mb-10 text-center">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to from-blue-600 to-indigo-600 mb-2">
+        <h1 className="text-4xl font-extrabold text-white [webkit-text-stroke:1px_black] bg-clip-text bg-linear-to from-blue-600 to-indigo-600 mb-2">
           Oficina do Dev
         </h1>
         <p className="text-slate-500 mb-8">Gerencie seus clientes e favoritos em um só lugar.</p>
         <button onClick={() => setModal(true)} className="text-blue-500 font-bold hover:cursor-pointer mb-5">Adicionar Cliente</button>
 
-        <ModalCliente modal={modal} setUsers={setUsers} CloseModal={() =>{ setModal(false);}}/>
+        <ModalCliente 
+          modal={modal} 
+          setUsers={setUsers} 
+          idCliente={idCliente} // ADICIONE ISSO
+          CloseModal={() => { 
+            setModal(false); 
+            setIdCliente(null); // LIMPE O ESTADO AO FECHAR
+          }}
+        />
         
       
         {/* INPUT DE BUSCA ESTILIZADO */}
@@ -127,6 +156,8 @@ export default function Home() {
                     cliente={user} 
                     isFavorite={favorites.includes(user.id)} 
                     onToggle={() => toggleFavorite(user.id)} 
+                    onDelete={() => deleteCliente(user.id)}
+                    onEdit={() => editCliente(user.id)}
                   />
             ))}
           </div>

@@ -16,7 +16,7 @@ const AuroraBackground = ({ children }) => {
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute -inset-[10px] opacity-50">
           {/* Esferas de luz animadas */}
-          <div className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] rounded-full bg-emerald-500/30 blur-[120px] animate-pulse" />
+          <div className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] rounded-full bg-gray-500 blur-[120px] animate-pulse" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/30 blur-[120px] animate-bounce [animation-duration:10s]" />
           <div className="absolute top-[20%] right-[10%] w-[50%] h-[50%] rounded-full bg-purple-500/20 blur-[120px] animate-pulse [animation-duration:8s]" />
         </div>

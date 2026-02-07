@@ -1,8 +1,7 @@
 "use client" 
 import Link from 'next/link';
 
-
-export default function CardCliente({ cliente, isFavorite, onToggle }) {
+export default function CardCliente({ cliente, isFavorite, onToggle, onDelete, onEdit }) {
 
     return (
     <div className={`
@@ -10,10 +9,36 @@ export default function CardCliente({ cliente, isFavorite, onToggle }) {
         hover:-translate-y-1 hover:shadow-xl group
         ${isFavorite ? 'bg-amber-50 border-amber-200 shadow-md' : 'bg-white border-slate-100 shadow-sm'}
     `}>
-        {/* Ícone de Favorito Flutuante (Visual) */}
-        {isFavorite && (
-            <span className="absolute top-4 right-4 text-2xl transition-all duration-500 ease-out animate-in fade-in zoom-in slide-in-from-bottom-2">⭐</span>
+        {/* Ícone de Favorito */}
+        {isFavorite ? (
+            <span className="absolute top-3 right-4 text-lg transition-all duration-500 ease-out animate-in fade-in zoom-in slide-in-from-bottom-2">
+                ⭐
+            </span>
+        ) : (
+            <span className="absolute top-3 right-4 text-lg opacity-100 grayscale transition-all duration-500">
+                ⭐
+            </span>
         )}
+
+        {/* Ícone de Edição (Novo) */}
+        <button 
+            onClick={onEdit}
+            className="absolute top-10 right-4 text-lg transition-all duration-500 hover:scale-110 hover:cursor-pointer"
+            title="Editar cliente"
+        >
+            ✏️
+        </button>
+
+        {/* Ícone de Lixeira */}
+        <button 
+            onClick={onDelete} 
+            className="absolute top-17 right-4 text-lg transition-all duration-500 ease-out hover:scale-110 hover:cursor-pointer"
+            title="Excluir cliente"
+        >
+            🗑️
+        </button>
+
+
 
         <div className='flex items-center gap-4 mb-4'>
              <img 
