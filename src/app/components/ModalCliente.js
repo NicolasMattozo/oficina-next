@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from './InputField';
+import { toast } from 'sonner';
 
     const schemaCliente = z.object({
     firstName: z.string().min(3, "O nome deve ter pelo menos 3 letras"),
@@ -31,7 +32,7 @@ export default function ModalCliente({modal, CloseModal, setUsers, idCliente}) {
         // --- LÓGICA DE EDIÇÃO ---
         novaLista = prevArray.map(item => {
             if (item.id === idCliente.id) {
-                // Retorna o objeto com os mesmos dados do formulário, mantendo o ID original
+                toast.info('Dados do cliente atualizados.');
                 return {
                     ...item,
                     name: data.firstName,
@@ -58,6 +59,7 @@ export default function ModalCliente({modal, CloseModal, setUsers, idCliente}) {
             address: { city: data.cidade }
         };
         novaLista = [novoCliente, ...prevArray];
+        toast.success('Novo cliente cadastrado!');
     }
 
     // Salva o resultado (seja edição ou criação)
@@ -69,9 +71,12 @@ export default function ModalCliente({modal, CloseModal, setUsers, idCliente}) {
 };
 
 
-    // Dentro do seu componente ModalCliente
     useEffect(() => {
+        // Se o modal estiver FECHADO, não faz nada (economiza processamento)
+        if (!modal) return; 
+
         if (idCliente) {
+            // MODO EDIÇÃO
             reset({
                 firstName: idCliente.name,
                 email: idCliente.email,
@@ -82,9 +87,18 @@ export default function ModalCliente({modal, CloseModal, setUsers, idCliente}) {
                 cidade: idCliente.address?.city
             });
         } else {
-            reset({}); // Limpa se for um novo cadastro
+            // MODO CRIAÇÃO (Garante que limpa tudo)
+            reset({
+                firstName: '',
+                email: '',
+                phone: '',
+                site: '',
+                username: '',
+                empresa: '',
+                cidade: ''
+            });
         }
-    }, [idCliente, reset]);
+    }, [idCliente, reset, modal]); // <--- O SEGREDO ESTÁ AQUI (adicionei 'modal')
 
 
     return(

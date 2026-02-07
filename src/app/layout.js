@@ -1,5 +1,6 @@
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import { Toaster } from 'sonner';
 
 const poppins = Poppins({ 
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
         className={poppins.className}
       >
         {children}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   </AuroraBackground>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 // Importamos nosso novo componente
 import CardCliente from './components/CardCliente';
 import ModalCliente from './components/ModalCliente';
-import { set } from 'zod';
+import { toast } from 'sonner';
 
 export default function Home() {
   const [modal, setModal] = useState(false);
@@ -37,6 +37,7 @@ export default function Home() {
     const usuariosFiltrados = items.filter(item => item.id !== id);
     setUsers(usuariosFiltrados);
     localStorage.setItem('clientes', JSON.stringify(usuariosFiltrados));
+    toast.error('Cliente removido com sucesso!');
   }
 
   const editCliente = (id) => {
